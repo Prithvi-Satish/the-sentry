@@ -1,0 +1,33 @@
+The Sentry: Financial Crime Detection Agent
+
+OVERVIEW
+--------
+The Sentry is an autonomous, real-time anomaly detection agent designed to identify financial crime and fraudulent transactions. It acts as the first line of defense in a multi-agent security system. Its primary role is to evaluate incoming transaction streams and flag potentially illicit activities without making a final verdict, adhering to strict data residency and zero-verdict policy guardrails.
+
+ARCHITECTURE
+------------
+The agent processes transactions through a robust three-layer architecture:
+
+1. Rules Engine:
+   Applies statutory rules and predefined weights to catch known financial crime patterns. This includes checking for violations like:
+   - I4C (Indian Cyber Crime Coordination Centre) watchlist hits
+   - Transactions on dormant accounts
+   - High-velocity fan-out activities
+   - Structuring (smurfing) attempts
+   - Device fingerprint mismatches
+
+2. ML Isolation Forest:
+   An unsupervised machine learning model that evaluates standard volume, velocity, and amount metrics to separate statistical outliers from normal transaction noise. It looks for unusual transactional behavior that might not trigger a hard-coded rule but is still highly suspicious.
+
+3. Vector Similarity Matcher:
+   Uses vector embeddings to compare the current transaction against historical known fraud archetypes. It helps identify behavioral similarities with past attacks, even if the exact parameters differ.
+
+OUTPUT PATTERN
+--------------
+When a transaction is processed, The Sentry outputs a highly structured JSON contract. If an anomaly is detected, the agent categorizes it into a specific "Anomaly Band" (e.g., CRITICAL, HIGH, MEDIUM) and outlines the specific reason codes justifying the flag. It does not block the transaction outright but rather flags it for downstream agents or human analysts to review.
+
+HOW TO RUN THE SIMULATION
+-------------------------
+1. Install dependencies: `pip install -r docs/requirements.txt`
+2. Run the mock stream: `python scripts/simulate_stream.py`
+3. View the generated alert payload in `data/sentry_alerts.json`
